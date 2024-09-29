@@ -58,7 +58,14 @@ class Program
                         tarjeta.cargarSaldo(monto);
                         break;
                     case "2":
+                        if (tarjeta.TarjetaUsos(tarjeta)) {
                         colectivo.PagarCon(tarjeta);
+                        boleto.FechaDatos(); 
+                        boleto.TipoTarjeta(tarjeta);
+                        boleto.MostrarLinea(colectivo); }
+                    else {
+                        Console.WriteLine("Limitacion en El medio boleto");
+                    }
                         break;
                     default:
                         Console.WriteLine("Opcion no valida");
