@@ -10,6 +10,7 @@ namespace TarjetaNamespace
         public int limite = 9900;
         public int ID = 123;
         public DateTime ultimaUso;
+        public int usosDiario = 0;
       
         public void cargarSaldo(int monto)
         {
@@ -35,7 +36,7 @@ namespace TarjetaNamespace
           TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
           if (t is MedioBoleto)
           {
-              if (tiempoDesdeUltimoUso.TotalMinutes >= 5)
+              if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && t.usosDiario >= 4)
               {
                  
                   ultimaUso = DateTime.Now;
@@ -49,6 +50,16 @@ namespace TarjetaNamespace
           ultimaUso = DateTime.Now; 
           return true;
       }
+
+    public bool LimitacionFranquicia(tarjeta t){
+      if (t is FranquiciaCompleta && t.usosDiario >= 2){
+        return false;
+      }
+      else {
+        t.usosDiario++;
+        return true;
+      }
+    }
 
     }
 

@@ -7,11 +7,11 @@
       public class colectivo {
           public string linea = "102 144";
           boleto boleto = new boleto();
-          public virtual void PagarCon (tarjeta tarjeta)
+          public virtual void PagarCon (tarjeta tarjeta, int precio)
           {
-              if (tarjeta.saldo >= tarjeta.precioBoleto(boleto.precio) - 480)
+              if (tarjeta.saldo >= precio - 480)
               {
-                  tarjeta.saldo -= tarjeta.precioBoleto(boleto.precio);
+                  tarjeta.saldo -= precio;
                   Console.WriteLine("Pago realizado con éxito.");
               }
               else
