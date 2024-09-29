@@ -59,6 +59,7 @@ class Program
                         break;
                     case "2":
                         colectivo.PagarCon(tarjeta);
+                        boleto.imprimirDatos(tarjeta);
                         break;
                     default:
                         Console.WriteLine("Opcion no valida");
