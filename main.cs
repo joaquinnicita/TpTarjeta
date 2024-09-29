@@ -58,7 +58,18 @@ class Program
                         tarjeta.cargarSaldo(monto);
                         break;
                     case "2":
-                        colectivo.PagarCon(tarjeta);
+                        if (tarjeta.TarjetaUsos(tarjeta) && tarjeta.LimitacionFranquicia(tarjeta)) {
+                        colectivo.PagarCon(tarjeta, tarjeta.precioBoleto(boleto.precio));
+                        boleto.FechaDatos(); 
+                        boleto.TipoTarjeta(tarjeta);
+                        boleto.MostrarLinea(colectivo); }
+                    else {
+                        
+                        colectivo.PagarCon(tarjeta, boleto.precio);
+                        boleto.FechaDatos(); 
+                        boleto.TipoTarjeta(tarjeta);
+                        boleto.MostrarLinea(colectivo); 
+                    }
                         break;
                     default:
                         Console.WriteLine("Opcion no valida");
