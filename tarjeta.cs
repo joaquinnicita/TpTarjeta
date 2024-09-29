@@ -7,16 +7,23 @@ namespace TarjetaNamespace
     public class tarjeta
     {
         public int saldo;
-        public int limite = 9900;
+        public int limite = 36000;
         public int ID = 123;
         public DateTime ultimaUso;
         public int usosDiario = 0;
+        public int saldoPendiente = 0;
       
         public void cargarSaldo(int monto)
         {
             if (monto <= limite && (monto == 2000 || monto == 3000 || monto == 4000 || monto == 5000 || monto == 6000 || monto == 7000 || monto == 8000 || monto == 9000))
             {
+              if(saldo + monto > limite) {
+                saldo = limite;
+                saldoPendiente = saldo + monto - limite;
+              }
+              else {
                 saldo += monto;
+              }
             }
             else
             {
