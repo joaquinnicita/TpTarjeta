@@ -8,35 +8,29 @@ namespace Tests
     public class PagarConSaldoTests
     {
         [Test]
-        public void Test_TarjetaNoQuedaConSaldoNegativo()
+        public void Test_NoSaldoNegativo()
         {
-            // Arrange
+
             var tarjeta = new Tarjeta();
             var colectivo = new Colectivo();
-            tarjeta.cargarSaldo(500);  // Cargar un saldo insuficiente para pagar un boleto
+            tarjeta.cargarSaldo(500);
 
-            // Act
-            colectivo.PagarCon(tarjeta);  // Intento de pagar con saldo insuficiente
-
-            // Assert
-            Assert.GreaterOrEqual(tarjeta.saldo, 0, "La tarjeta no debería quedar con saldo negativo.");
+            colectivo.PagarCon(tarjeta);
+            Assert.GreaterOrEqual(tarjeta.saldo, 0, "La tarjeta no deberÃ­a quedar con saldo negativo.");
         }
 
 
         [Test]
-        public void Test_DescuentoCorrectoDelSaldo()
+        public void Test_DescuentoDelSaldo()
         {
-            // Arrange
             var tarjeta = new Tarjeta();
             var colectivo = new Colectivo();
-            tarjeta.cargarSaldo(2000);  // Cargar saldo suficiente
+            tarjeta.cargarSaldo(2000);
 
-            // Act
-            colectivo.PagarCon(tarjeta);  // Pagar un boleto
+            colectivo.PagarCon(tarjeta);
 
-            // Assert
-            int saldoEsperado = 2000 - 940;  // Saldo esperado después del pago
-            Assert.AreEqual(saldoEsperado, tarjeta.saldo, "El saldo no se descontó correctamente.");
+            int saldoEsperado = 2000 - 940;
+            Assert.AreEqual(saldoEsperado, tarjeta.saldo, "El saldo no se descontÃ³ correctamente.");
         }
 
     }
