@@ -118,9 +118,13 @@ namespace TarjetaNamespace
         {
             if (!EsHorarioValido())
             {
-                return precio; 
+                return precio;
             }
-            return 0;
+            else
+            {
+                return 0;
+            }
+                
         }
 
         private bool EsHorarioValido()
