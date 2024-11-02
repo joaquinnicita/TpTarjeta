@@ -3,7 +3,6 @@ using BoletoNamespace;
 
 namespace TarjetaNamespace
 {
-
     public class tarjeta
     {
         public int saldo;
@@ -12,18 +11,21 @@ namespace TarjetaNamespace
         public DateTime ultimaUso;
         public int usosDiario = 0;
         public int saldoPendiente = 0;
-      
+        public int viajesMensuales = 0;
+
         public void cargarSaldo(int monto)
         {
             if (monto <= limite && (monto == 2000 || monto == 3000 || monto == 4000 || monto == 5000 || monto == 6000 || monto == 7000 || monto == 8000 || monto == 9000))
             {
-              if(saldo + monto > limite) {
-                saldo = limite;
-                saldoPendiente = saldo + monto - limite;
-              }
-              else {
-                saldo += monto;
-              }
+                if (saldo + monto > limite)
+                {
+                    saldo = limite;
+                    saldoPendiente = saldo + monto - limite;
+                }
+                else
+                {
+                    saldo += monto;
+                }
             }
             else
             {
@@ -33,48 +35,59 @@ namespace TarjetaNamespace
 
         public virtual int precioBoleto(int precio)
         {
-            return precio;
+            int precioFinal = precio;
+
+            if (viajesMensuales >= 30 && viajesMensuales <= 79)
+            {
+                precioFinal = (int)(precio * 0.8);
+            }
+            else if (viajesMensuales == 80)
+            {
+                precioFinal = (int)(precio * 0.75);
+            }
+
+            viajesMensuales++;
+            return precioFinal;
         }
 
+        public bool TarjetaUsos(tarjeta t)
+        {
+            TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
+            if (t is MedioBoleto)
+            {
+                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && t.usosDiario >= 4)
+                {
+                    ultimaUso = DateTime.Now;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            ultimaUso = DateTime.Now;
+            return true;
+        }
 
-      public bool TarjetaUsos(tarjeta t)
-      {
-          
-          TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
-          if (t is MedioBoleto)
-          {
-              if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && t.usosDiario >= 4)
-              {
-                 
-                  ultimaUso = DateTime.Now;
-                  return true;
-              }
-              else
-              {
-                  return false;
-              }
-          }
-          ultimaUso = DateTime.Now; 
-          return true;
-      }
-
-    public bool LimitacionFranquicia(tarjeta t){
-      if (t is FranquiciaCompleta && t.usosDiario >= 2){
-        return false;
-      }
-      else {
-        t.usosDiario++;
-        return true;
-      }
-    }
-
+        public bool LimitacionFranquicia(tarjeta t)
+        {
+            if (t is FranquiciaCompleta && t.usosDiario >= 2)
+            {
+                return false;
+            }
+            else
+            {
+                t.usosDiario++;
+                return true;
+            }
+        }
     }
 
     public class MedioBoleto : tarjeta
     {
         public override int precioBoleto(int precio)
         {
-            return precio / 2;
+            return base.precioBoleto(precio / 2);
         }
     }
 
@@ -84,9 +97,5 @@ namespace TarjetaNamespace
         {
             return 0;
         }
-    } 
-  }
-
-
-
-
+    }
+}
