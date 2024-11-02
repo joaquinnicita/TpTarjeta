@@ -1,3 +1,4 @@
+﻿
 using System;
 using TarjetaNamespace;
 using BoletoNamespace;
@@ -8,11 +9,11 @@ namespace ColectivoNamespace
     {
         public string linea = "102 144";
         Boleto boleto = new Boleto();
-        public virtual void PagarCon(Tarjeta tarjeta)
+        public virtual void PagarCon(Tarjeta tarjeta, int precio)
         {
-            if (tarjeta.saldo >= tarjeta.precioBoleto(boleto.precio) - 480)
+            if (tarjeta.saldo >= precio - 480)
             {
-                tarjeta.saldo -= tarjeta.precioBoleto(boleto.precio);
+                tarjeta.saldo -= precio;
                 Console.WriteLine("Pago realizado con éxito.");
             }
             else

@@ -1,3 +1,4 @@
+﻿
 using System;
 using BoletoNamespace;
 using ColectivoNamespace;
@@ -58,16 +59,20 @@ class Program
                         tarjeta.cargarSaldo(monto);
                         break;
                     case "2":
-                        if (tarjeta.TarjetaUsos(tarjeta))
+                        if (tarjeta.TarjetaUsos(tarjeta) && tarjeta.LimitacionFranquicia(tarjeta))
                         {
-                            colectivo.PagarCon(tarjeta);
+                            colectivo.PagarCon(tarjeta, tarjeta.precioBoleto(boleto.precio));
                             boleto.FechaDatos();
                             boleto.TipoTarjeta(tarjeta);
                             boleto.MostrarLinea(colectivo);
                         }
                         else
                         {
-                            Console.WriteLine("Limitacion en El medio boleto");
+
+                            colectivo.PagarCon(tarjeta, boleto.precio);
+                            boleto.FechaDatos();
+                            boleto.TipoTarjeta(tarjeta);
+                            boleto.MostrarLinea(colectivo);
                         }
                         break;
                     default:
