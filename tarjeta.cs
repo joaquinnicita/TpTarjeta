@@ -97,9 +97,7 @@ namespace TarjetaNamespace
     {
         public override int precioBoleto(int precio)
         {
-<<<<<<< HEAD
             return base.precioBoleto(precio / 2);
-=======
             if (!EsHorarioValido())
             {
                 return precio;
@@ -112,7 +110,6 @@ namespace TarjetaNamespace
             DateTime ahora = DateTime.Now;
             return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
                    (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
->>>>>>> main
         }
     }
 
@@ -130,8 +127,6 @@ namespace TarjetaNamespace
             }
                 
         }
-<<<<<<< HEAD
-=======
 
         private bool EsHorarioValido()
         {
@@ -139,6 +134,6 @@ namespace TarjetaNamespace
             return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
                    (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
         }
->>>>>>> main
+
     }
 }
