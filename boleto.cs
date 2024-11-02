@@ -7,7 +7,7 @@ namespace BoletoNamespace
 {
     public class boleto
     {
-        public int precio = (colectivo.esInterurbano ? 2400 : 2500);
+        public int precio = 2400;
         private Timer timer; 
         public DateTime Fecha { get; private set; }
 
