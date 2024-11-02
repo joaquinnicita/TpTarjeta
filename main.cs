@@ -8,9 +8,9 @@ class Program
 
     public static void Main(string[] args)
     {
-        boleto boleto = new boleto();
-        colectivo colectivo = new colectivo();
-        tarjeta tarjeta = null;
+        Boleto boleto = new Boleto();
+        Colectivo colectivo = new Colectivo();
+        Tarjeta tarjeta = null;
 
         while (true)
         {
@@ -23,7 +23,7 @@ class Program
             switch (tipo_tarjeta)
             {
                 case "1":
-                    tarjeta = new tarjeta();
+                    tarjeta = new Tarjeta();
                     break;
                 case "2":
                     tarjeta = new MedioBoleto();
@@ -47,7 +47,7 @@ class Program
             Console.WriteLine("1: Cargar saldo");
             Console.WriteLine("2: Pagar boleto");
             Console.WriteLine("saldo actual: " + tarjeta.saldo);
-            
+
             string opcion = Console.ReadLine();
             {
                 switch (opcion)
@@ -58,18 +58,17 @@ class Program
                         tarjeta.cargarSaldo(monto);
                         break;
                     case "2":
-                        if (tarjeta.TarjetaUsos(tarjeta) && tarjeta.LimitacionFranquicia(tarjeta)) {
-                        colectivo.PagarCon(tarjeta, tarjeta.precioBoleto(boleto.precio));
-                        boleto.FechaDatos(); 
-                        boleto.TipoTarjeta(tarjeta);
-                        boleto.MostrarLinea(colectivo); }
-                    else {
-                        
-                        colectivo.PagarCon(tarjeta, boleto.precio);
-                        boleto.FechaDatos(); 
-                        boleto.TipoTarjeta(tarjeta);
-                        boleto.MostrarLinea(colectivo); 
-                    }
+                        if (tarjeta.TarjetaUsos(tarjeta))
+                        {
+                            colectivo.PagarCon(tarjeta);
+                            boleto.FechaDatos();
+                            boleto.TipoTarjeta(tarjeta);
+                            boleto.MostrarLinea(colectivo);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Limitacion en El medio boleto");
+                        }
                         break;
                     default:
                         Console.WriteLine("Opcion no valida");
