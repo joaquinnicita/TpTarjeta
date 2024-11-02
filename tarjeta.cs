@@ -1,3 +1,4 @@
+﻿
 using System;
 using BoletoNamespace;
 
@@ -7,21 +8,41 @@ namespace TarjetaNamespace
     public class Tarjeta
     {
         public int saldo;
-        public int limite = 9900;
+        public int limite = 36000;
         public int ID = 123;
         public DateTime ultimaUso;
+        public int usosDiario = 0;
+        public int saldoPendiente = 0;
 
         public void cargarSaldo(int monto)
         {
-            if (monto <= limite && (monto == 2000 || monto == 3000 || monto == 4000 || monto == 5000 || monto == 6000 || monto == 7000 || monto == 8000 || monto == 9000))
+            if (saldo < limite && saldoPendiente > 0)
             {
-                saldo += monto;
+                int espacioDisponible = limite - saldo;
+                if (saldoPendiente >= espacioDisponible)
+                {
+                    saldo += espacioDisponible;
+                    saldoPendiente -= espacioDisponible;
+                }
+                else
+                {
+                    saldo += saldoPendiente;
+                    saldoPendiente = 0;
+                }
+            }
+
+            int espacioRestante = limite - saldo;
+            if (monto > espacioRestante)
+            {
+                saldo = limite;
+                saldoPendiente += monto - espacioRestante;
             }
             else
             {
-                Console.WriteLine("El monto no es valido");
+                saldo += monto;
             }
         }
+
 
         public virtual int precioBoleto(int precio)
         {
@@ -35,7 +56,7 @@ namespace TarjetaNamespace
             TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
             if (t is MedioBoleto)
             {
-                if (tiempoDesdeUltimoUso.TotalMinutes >= 5)
+                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && t.usosDiario >= 4)
                 {
 
                     ultimaUso = DateTime.Now;
@@ -48,6 +69,19 @@ namespace TarjetaNamespace
             }
             ultimaUso = DateTime.Now;
             return true;
+        }
+
+        public bool LimitacionFranquicia(Tarjeta t)
+        {
+            if (t is FranquiciaCompleta && t.usosDiario >= 2)
+            {
+                return false;
+            }
+            else
+            {
+                t.usosDiario++;
+                return true;
+            }
         }
 
     }
