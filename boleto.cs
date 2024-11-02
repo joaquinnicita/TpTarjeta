@@ -41,17 +41,14 @@ namespace BoletoNamespace
             if (tarjeta is MedioBoleto)
             {
                 Console.WriteLine("La tarjeta es un Medio Boleto.");
-                Console.WriteLine("El total abonado es: " + precio / 2);
             }
             else if (tarjeta is FranquiciaCompleta)
             {
                 Console.WriteLine("La tarjeta es una Franquicia Completa.");
-                Console.WriteLine("El total abonado es: 0");
             }
             else
             {
                 Console.WriteLine("La tarjeta es una Tarjeta Normal.");
-                Console.WriteLine("El total abonado es: " + precio);
             }
 
             Console.WriteLine("ID de la tarjeta: " + tarjeta.ID);

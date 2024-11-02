@@ -1,5 +1,6 @@
 using System;
 using BoletoNamespace;
+using ColectivoNamespace;
 
 namespace TarjetaNamespace
 {
@@ -53,7 +54,8 @@ namespace TarjetaNamespace
         public bool TarjetaUsos(tarjeta t)
         {
             TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
-            if (t is MedioBoleto)
+
+            if (t is MedioBoleto || t is FranquiciaCompleta)
             {
                 if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && t.usosDiario >= 4)
                 {
@@ -65,8 +67,16 @@ namespace TarjetaNamespace
                     return false;
                 }
             }
+
             ultimaUso = DateTime.Now;
             return true;
+        }
+
+        private bool EsHorarioValido()
+        {
+            DateTime ahora = DateTime.Now;
+            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
+                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
         }
 
         public bool LimitacionFranquicia(tarjeta t)
@@ -87,7 +97,22 @@ namespace TarjetaNamespace
     {
         public override int precioBoleto(int precio)
         {
+<<<<<<< HEAD
             return base.precioBoleto(precio / 2);
+=======
+            if (!EsHorarioValido())
+            {
+                return precio;
+            }
+            return base.precioBoleto(precio / 2);
+        }
+
+        private bool EsHorarioValido()
+        {
+            DateTime ahora = DateTime.Now;
+            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
+                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
+>>>>>>> main
         }
     }
 
@@ -95,7 +120,25 @@ namespace TarjetaNamespace
     {
         public override int precioBoleto(int precio)
         {
-            return 0;
+            if (!EsHorarioValido())
+            {
+                return precio;
+            }
+            else
+            {
+                return 0;
+            }
+                
         }
+<<<<<<< HEAD
+=======
+
+        private bool EsHorarioValido()
+        {
+            DateTime ahora = DateTime.Now;
+            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
+                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
+        }
+>>>>>>> main
     }
 }
