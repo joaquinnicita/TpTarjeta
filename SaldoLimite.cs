@@ -18,8 +18,8 @@ namespace Tests
             tarjeta.cargarSaldo(9000);
             tarjeta.cargarSaldo(2000);
 
-            Assert.AreEqual(36000, tarjeta.saldo, "El saldo debería alcanzar el límite máximo permitido de 36000.");
-            Assert.AreEqual(2000, tarjeta.saldoPendiente, "El excedente pendiente debería ser 2000.");
+            Assert.AreEqual(36000, tarjeta.saldo, "El saldo deberÃ­a alcanzar el lÃ­mite mÃ¡ximo permitido de 36000.");
+            Assert.AreEqual(2000, tarjeta.saldoPendiente, "El excedente pendiente deberÃ­a ser 2000.");
         }
         [Test]
         public void Test_ProcesarExcedenteDespuesDeViaje()
@@ -34,11 +34,11 @@ namespace Tests
             tarjeta.cargarSaldo(9000);
             tarjeta.cargarSaldo(2000);
 
-            colectivo.PagarCon(tarjeta);
+            colectivo.PagarCon(tarjeta, 940);
             tarjeta.cargarSaldo(2000);
 
-            Assert.AreEqual(36000, tarjeta.saldo, "El saldo debería estar en el límite máximo de 36000.");
-            Assert.AreEqual(3060, tarjeta.saldoPendiente, "Debería quedar 3060 pendiente después de recargar el saldo al máximo.");
+            Assert.AreEqual(36000, tarjeta.saldo, "El saldo deberÃ­a estar en el lÃ­mite mÃ¡ximo de 36000.");
+            Assert.AreEqual(3060, tarjeta.saldoPendiente, "DeberÃ­a quedar 3060 pendiente despuÃ©s de recargar el saldo al mÃ¡ximo.");
         }
 
     }
