@@ -4,14 +4,13 @@ using BoletoNamespace;
 
 namespace ColectivoNamespace
 {
-    public class colectivo
+    public class Colectivo
     {
         public string linea = "102 144";
-        public bool esInterurbano = true;
+        public bool esInterurbano = false;
 
-        public virtual void PagarCon(tarjeta tarjeta, int precio)
+        public virtual void PagarCon(Tarjeta tarjeta, int precio)
         {
-            // Ajustar el precio según el tipo de tarjeta
             if (tarjeta is MedioBoleto)
             {
                 precio = ((MedioBoleto)tarjeta).precioBoleto(precio);
@@ -25,10 +24,9 @@ namespace ColectivoNamespace
                 precio = tarjeta.precioBoleto(precio);
             }
 
-            // Verificar el saldo y realizar el pago
-            if (tarjeta.saldo >= precio)
+            if (tarjeta.saldo + 480 >= precio)
             {
-                tarjeta.saldo -= precio; // Ajustar el saldo según el precio calculado
+                tarjeta.saldo -= precio;
                 Console.WriteLine("Pago realizado con éxito.");
                 Console.WriteLine("Total abonado: " + precio);
             }
