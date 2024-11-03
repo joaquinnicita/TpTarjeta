@@ -60,9 +60,13 @@ namespace TarjetaNamespace
             {
                 precioFinal = (int)(precio * 0.8);
             }
-            else if (viajesMensuales >= 79)
+            else if (viajesMensuales == 79 || viajesMensuales == 80)
             {
                 precioFinal = (int)(precio * 0.75);
+            }
+            else
+            {
+                precioFinal = precio;
             }
 
             viajesMensuales++;
