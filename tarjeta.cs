@@ -3,7 +3,6 @@ using BoletoNamespace;
 
 namespace TarjetaNamespace
 {
-
     public class tarjeta
     {
         public int saldo;
@@ -11,7 +10,7 @@ namespace TarjetaNamespace
         public int ID = 123;
         public DateTime ultimaUso;
         public int usosDiario = 0;
-      
+
         public void cargarSaldo(int monto)
         {
             if (monto <= limite && (monto == 2000 || monto == 3000 || monto == 4000 || monto == 5000 || monto == 6000 || monto == 7000 || monto == 8000 || monto == 9000))
@@ -29,37 +28,25 @@ namespace TarjetaNamespace
             return precio;
         }
 
+        public bool TarjetaUsos(tarjeta t)
+        {
+            TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
+            if (t is MedioBoleto)
+            {
+                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && t.usosDiario >= 4)
+                {
+                    ultimaUso = DateTime.Now;
+                    return true; // Puede usar la tarjeta
+                }
+                else
+                {
+                    return false; // No puede usar la tarjeta
+                }
+            }
+            ultimaUso = DateTime.Now;
+            return true; // Puede usar la tarjeta
+        }
 
-      public bool TarjetaUsos(tarjeta t)
-      {
-          
-          TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
-          if (t is MedioBoleto)
-          {
-              if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && t.usosDiario >= 4)
-              {
-                 
-                  ultimaUso = DateTime.Now;
-                  return true;
-              }
-              else
-              {
-                  return false;
-              }
-          }
-          ultimaUso = DateTime.Now; 
-          return true;
-      }
-
-    public bool LimitacionFranquicia(tarjeta t){
-      if (t is FranquiciaCompleta && t.usosDiario >= 2){
-        return false;
-      }
-      else {
-        t.usosDiario++;
-        return true;
-      }
-    }
 
     }
 
@@ -67,7 +54,7 @@ namespace TarjetaNamespace
     {
         public override int precioBoleto(int precio)
         {
-            return precio / 2;
+            return precio / 2; // Precio reducido a la mitad
         }
     }
 
@@ -75,11 +62,16 @@ namespace TarjetaNamespace
     {
         public override int precioBoleto(int precio)
         {
-            return 0;
+            if (usosDiario < 3)
+            {
+                usosDiario++;
+                return 0; // Primeros dos viajes son gratuitos
+            }
+            else
+            {
+                return precio; // Precio completo después de dos viajes
+            }
+
         }
-    } 
-  }
-
-
-
-
+    }
+}
