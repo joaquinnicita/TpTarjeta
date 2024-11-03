@@ -1,64 +1,116 @@
 using System;
 using BoletoNamespace;
+using ColectivoNamespace;
 
 namespace TarjetaNamespace
 {
-    public class tarjeta
+    public class Tarjeta
     {
         public int saldo;
-        public int limite = 9900;
+        public int limite = 36000;
         public int ID = 123;
         public DateTime ultimaUso;
         public int usosDiario = 0;
+        public int saldoPendiente = 0;
+        public int viajesMensuales = 0;
 
         public void cargarSaldo(int monto)
         {
-            if (monto <= limite && (monto == 2000 || monto == 3000 || monto == 4000 || monto == 5000 || monto == 6000 || monto == 7000 || monto == 8000 || monto == 9000))
+            if (saldo < limite && saldoPendiente > 0)
             {
-                saldo += monto;
+                int espacioDisponible = limite - saldo;
+                if (saldoPendiente >= espacioDisponible)
+                {
+                    saldo += espacioDisponible;
+                    saldoPendiente -= espacioDisponible;
+                }
+                else
+                {
+                    saldo += saldoPendiente;
+                    saldoPendiente = 0;
+                }
+            }
+
+            int espacioRestante = limite - saldo;
+            if (monto > espacioRestante)
+            {
+                saldo = limite;
+                saldoPendiente += monto - espacioRestante;
             }
             else
             {
-                Console.WriteLine("El monto no es valido");
+                saldo += monto;
             }
         }
 
         public virtual int precioBoleto(int precio)
         {
-            return precio;
+            int precioFinal = precio;
+
+            if (viajesMensuales >= 30 && viajesMensuales < 79)
+            {
+                precioFinal = (int)(precio * 0.8);
+            }
+            else if (viajesMensuales >= 79)
+            {
+                precioFinal = (int)(precio * 0.75);
+            }
+
+            viajesMensuales++;
+            return precioFinal;
         }
 
-        public bool TarjetaUsos(tarjeta t)
+        public bool TarjetaUsos(Tarjeta t)
         {
             TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
             if (t is MedioBoleto)
             {
-                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && t.usosDiario >= 4)
+                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && usosDiario >= 4)
                 {
                     ultimaUso = DateTime.Now;
                     return true; // Puede usar la tarjeta
                 }
-                else
-                {
-                    return false; // No puede usar la tarjeta
-                }
+                return false; // No puede usar la tarjeta
             }
+
             ultimaUso = DateTime.Now;
             return true; // Puede usar la tarjeta
         }
 
-
-    }
-
-    public class MedioBoleto : tarjeta
-    {
-        public override int precioBoleto(int precio)
+        public bool LimitacionFranquicia(Tarjeta t)
         {
-            return precio / 2; // Precio reducido a la mitad
+            if (t is FranquiciaCompleta && usosDiario >= 2)
+            {
+                return false; // Limite alcanzado
+            }
+            else
+            {
+                usosDiario++;
+                return true; // Puede usar la franquicia
+            }
+        }
+
+        private bool EsHorarioValido()
+        {
+            DateTime ahora = DateTime.Now;
+            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
+                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
         }
     }
 
-    public class FranquiciaCompleta : tarjeta
+    public class MedioBoleto : Tarjeta
+    {
+        public override int precioBoleto(int precio)
+        {
+            if (!EsHorarioValido())
+            {
+                return precio; // No se aplica descuento fuera de horario válido
+            }
+            return base.precioBoleto(precio) / 2; // Precio reducido a la mitad
+        }
+    }
+
+    public class FranquiciaCompleta : Tarjeta
     {
         public override int precioBoleto(int precio)
         {
@@ -67,11 +119,7 @@ namespace TarjetaNamespace
                 usosDiario++;
                 return 0; // Primeros dos viajes son gratuitos
             }
-            else
-            {
-                return precio; // Precio completo después de dos viajes
-            }
-
+            return precio; // Precio completo después de dos viajes
         }
     }
 }
