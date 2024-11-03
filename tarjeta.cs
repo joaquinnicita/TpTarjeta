@@ -72,9 +72,14 @@ namespace TarjetaNamespace
             return true;
         }
 
-        private bool EsHorarioValido()
+        protected virtual DateTime ObtenerFechaActual()
         {
-            DateTime ahora = DateTime.Now;
+            return DateTime.Now;
+        }
+
+        protected bool EsHorarioValido()
+        {
+            DateTime ahora = ObtenerFechaActual();
             return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
                    (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
         }
@@ -97,18 +102,11 @@ namespace TarjetaNamespace
     {
         public override int precioBoleto(int precio)
         {
-            if (!EsHorarioValido())
+            if (EsHorarioValido())
             {
-                return precio;
+                precio = (precio / 2);
             }
-            return base.precioBoleto(precio / 2);
-        }
-
-        private bool EsHorarioValido()
-        {
-            DateTime ahora = DateTime.Now;
-            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
-                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
+            return precio;
         }
     }
 
@@ -118,16 +116,12 @@ namespace TarjetaNamespace
         {
             if (!EsHorarioValido())
             {
-                return precio; 
+                return precio;
             }
-            return 0;
-        }
-
-        private bool EsHorarioValido()
-        {
-            DateTime ahora = DateTime.Now;
-            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
-                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
+            else
+            {
+                return 0;
+            }
         }
     }
 }
