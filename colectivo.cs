@@ -26,6 +26,7 @@ namespace ColectivoNamespace
 
             if (tarjeta.saldo + 480 >= precio)
             {
+                tarjeta.usosDiario++;
                 tarjeta.saldo -= precio;
                 Console.WriteLine("Pago realizado con éxito.");
                 Console.WriteLine("Total abonado: " + precio);
@@ -37,3 +38,4 @@ namespace ColectivoNamespace
         }
     }
 }
+
