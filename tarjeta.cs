@@ -77,6 +77,18 @@ namespace TarjetaNamespace
             return true; // Puede usar la tarjeta
         }
 
+        protected virtual DateTime ObtenerFechaActual()
+        {
+            return DateTime.Now;
+        }
+
+        protected bool EsHorarioValido()
+        {
+            DateTime ahora = ObtenerFechaActual();
+            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
+                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
+        }
+
         public bool LimitacionFranquicia(Tarjeta t)
         {
             if (t is FranquiciaCompleta && usosDiario >= 2)
@@ -88,13 +100,6 @@ namespace TarjetaNamespace
                 usosDiario++;
                 return true; // Puede usar la franquicia
             }
-        }
-
-        private bool EsHorarioValido()
-        {
-            DateTime ahora = DateTime.Now;
-            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
-                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
         }
     }
 
