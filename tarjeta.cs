@@ -68,13 +68,13 @@ namespace TarjetaNamespace
                 if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && usosDiario >= 4)
                 {
                     ultimaUso = DateTime.Now;
-                    return true; // Puede usar la tarjeta
+                    return true;
                 }
-                return false; // No puede usar la tarjeta
+                return false;
             }
 
             ultimaUso = DateTime.Now;
-            return true; // Puede usar la tarjeta
+            return true;
         }
 
         protected virtual DateTime ObtenerFechaActual()
@@ -93,12 +93,12 @@ namespace TarjetaNamespace
         {
             if (t is FranquiciaCompleta && usosDiario >= 2)
             {
-                return false; // Limite alcanzado
+                return false;
             }
             else
             {
                 usosDiario++;
-                return true; // Puede usar la franquicia
+                return true;
             }
         }
     }
@@ -107,11 +107,11 @@ namespace TarjetaNamespace
     {
         public override int precioBoleto(int precio)
         {
-            if (!EsHorarioValido())
+            if (EsHorarioValido())
             {
-                return precio; // No se aplica descuento fuera de horario válido
+                return (precio / 2);
             }
-            return base.precioBoleto(precio) / 2; // Precio reducido a la mitad
+            return precio;
         }
     }
 
@@ -122,9 +122,9 @@ namespace TarjetaNamespace
             if (usosDiario < 3)
             {
                 usosDiario++;
-                return 0; // Primeros dos viajes son gratuitos
+                return 0;
             }
-            return precio; // Precio completo después de dos viajes
+            return precio;
         }
     }
 }
