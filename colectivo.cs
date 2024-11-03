@@ -1,6 +1,8 @@
-  using System;
-  using TarjetaNamespace;
-  using BoletoNamespace;
+﻿
+using System;
+using TarjetaNamespace;
+using BoletoNamespace;
+
 
   namespace ColectivoNamespace
   {
