@@ -1,11 +1,14 @@
 ﻿
 using System;
 using BoletoNamespace;
+using ColectivoNamespace;
 
 namespace TarjetaNamespace
 {
 
+
     public class Tarjeta
+
     {
         public int saldo;
         public int limite = 36000;
@@ -13,6 +16,8 @@ namespace TarjetaNamespace
         public DateTime ultimaUso;
         public int usosDiario = 0;
         public int saldoPendiente = 0;
+        public int viajesMensuales = 0;
+
 
         public void cargarSaldo(int monto)
         {
@@ -34,8 +39,20 @@ namespace TarjetaNamespace
             int espacioRestante = limite - saldo;
             if (monto > espacioRestante)
             {
+
                 saldo = limite;
                 saldoPendiente += monto - espacioRestante;
+
+                if (saldo + monto > limite)
+                {
+                    saldo = limite;
+                    saldoPendiente = saldo + monto - limite;
+                }
+                else
+                {
+                    saldo += monto;
+                }
+
             }
             else
             {
@@ -46,9 +63,24 @@ namespace TarjetaNamespace
 
         public virtual int precioBoleto(int precio)
         {
-            return precio;
+            int precioFinal = precio;
+
+            if (viajesMensuales >= 30 && viajesMensuales <= 79)
+            {
+                precioFinal = (int)(precio * 0.8);
+            }
+            else if (viajesMensuales == 80)
+            {
+                precioFinal = (int)(precio * 0.75);
+            }
+
+            viajesMensuales++;
+            return precioFinal;
         }
 
+        public bool TarjetaUsos(tarjeta t)
+        {
+            TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
 
         public bool TarjetaUsos(Tarjeta t)
         {
@@ -83,14 +115,61 @@ namespace TarjetaNamespace
                 return true;
             }
         }
+            if (t is MedioBoleto || t is FranquiciaCompleta)
+            {
+                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && t.usosDiario >= 4)
+                {
+                    ultimaUso = DateTime.Now;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
 
+            ultimaUso = DateTime.Now;
+            return true;
+        }
+
+        private bool EsHorarioValido()
+        {
+            DateTime ahora = DateTime.Now;
+            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
+                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
+        }
+
+        public bool LimitacionFranquicia(tarjeta t)
+        {
+            if (t is FranquiciaCompleta && t.usosDiario >= 2)
+            {
+                return false;
+            }
+            else
+            {
+                t.usosDiario++;
+                return true;
+            }
+        }
     }
 
     public class MedioBoleto : Tarjeta
     {
         public override int precioBoleto(int precio)
         {
-            return precio / 2;
+            return base.precioBoleto(precio / 2);
+            if (!EsHorarioValido())
+            {
+                return precio;
+            }
+            return base.precioBoleto(precio / 2);
+        }
+
+        private bool EsHorarioValido()
+        {
+            DateTime ahora = DateTime.Now;
+            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
+                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
         }
     }
 
@@ -98,7 +177,24 @@ namespace TarjetaNamespace
     {
         public override int precioBoleto(int precio)
         {
-            return 0;
+            if (!EsHorarioValido())
+            {
+                return precio;
+            }
+            else
+            {
+                return 0;
+            }
+                
         }
+
+        private bool EsHorarioValido()
+        {
+            DateTime ahora = DateTime.Now;
+            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
+                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
+        }
+
+
     }
 }
