@@ -1,9 +1,14 @@
+﻿
 using System;
 using BoletoNamespace;
+using ColectivoNamespace;
 
 namespace TarjetaNamespace
 {
-    public class tarjeta
+
+
+    public class Tarjeta
+
     {
         public int saldo;
         public int limite = 36000;
@@ -13,10 +18,31 @@ namespace TarjetaNamespace
         public int saldoPendiente = 0;
         public int viajesMensuales = 0;
 
+
         public void cargarSaldo(int monto)
         {
-            if (monto <= limite && (monto == 2000 || monto == 3000 || monto == 4000 || monto == 5000 || monto == 6000 || monto == 7000 || monto == 8000 || monto == 9000))
+            if (saldo < limite && saldoPendiente > 0)
             {
+                int espacioDisponible = limite - saldo;
+                if (saldoPendiente >= espacioDisponible)
+                {
+                    saldo += espacioDisponible;
+                    saldoPendiente -= espacioDisponible;
+                }
+                else
+                {
+                    saldo += saldoPendiente;
+                    saldoPendiente = 0;
+                }
+            }
+
+            int espacioRestante = limite - saldo;
+            if (monto > espacioRestante)
+            {
+
+                saldo = limite;
+                saldoPendiente += monto - espacioRestante;
+
                 if (saldo + monto > limite)
                 {
                     saldo = limite;
@@ -26,12 +52,14 @@ namespace TarjetaNamespace
                 {
                     saldo += monto;
                 }
+
             }
             else
             {
-                Console.WriteLine("El monto no es valido");
+                saldo += monto;
             }
         }
+
 
         public virtual int precioBoleto(int precio)
         {
@@ -58,7 +86,41 @@ namespace TarjetaNamespace
     public bool TarjetaUsos(tarjeta t)
         {
             TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
+
+        public bool TarjetaUsos(Tarjeta t)
+        {
+
+            TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
             if (t is MedioBoleto)
+            {
+                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && t.usosDiario >= 4)
+                {
+
+                    ultimaUso = DateTime.Now;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            ultimaUso = DateTime.Now;
+            return true;
+        }
+
+        public bool LimitacionFranquicia(Tarjeta t)
+        {
+            if (t is FranquiciaCompleta && t.usosDiario >= 2)
+            {
+                return false;
+            }
+            else
+            {
+                t.usosDiario++;
+                return true;
+            }
+        }
+            if (t is MedioBoleto || t is FranquiciaCompleta)
             {
                 if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && t.usosDiario >= 4)
                 {
@@ -70,8 +132,16 @@ namespace TarjetaNamespace
                     return false;
                 }
             }
+
             ultimaUso = DateTime.Now;
             return true;
+        }
+
+        private bool EsHorarioValido()
+        {
+            DateTime ahora = DateTime.Now;
+            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
+                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
         }
 
         public bool LimitacionFranquicia(tarjeta t)
@@ -88,19 +158,48 @@ namespace TarjetaNamespace
         }
     }
 
-    public class MedioBoleto : tarjeta
+    public class MedioBoleto : Tarjeta
     {
         public override int precioBoleto(int precio)
         {
             return base.precioBoleto(precio / 2);
+            if (!EsHorarioValido())
+            {
+                return precio;
+            }
+            return base.precioBoleto(precio / 2);
+        }
+
+        private bool EsHorarioValido()
+        {
+            DateTime ahora = DateTime.Now;
+            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
+                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
         }
     }
 
-    public class FranquiciaCompleta : tarjeta
+    public class FranquiciaCompleta : Tarjeta
     {
         public override int precioBoleto(int precio)
         {
-            return 0;
+            if (!EsHorarioValido())
+            {
+                return precio;
+            }
+            else
+            {
+                return 0;
+            }
+                
         }
+
+        private bool EsHorarioValido()
+        {
+            DateTime ahora = DateTime.Now;
+            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
+                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
+        }
+
+
     }
 }
