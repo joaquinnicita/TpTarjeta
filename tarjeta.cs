@@ -10,7 +10,7 @@ namespace TarjetaNamespace
         public int limite = 36000;
         public int ID = 123;
         public DateTime ultimaUso;
-        public int usosDiario = 0;
+        public int usosDiario = 1;
         public int saldoPendiente = 0;
         public int viajesMensuales = 0;
 
@@ -76,21 +76,28 @@ namespace TarjetaNamespace
         public bool TarjetaUsos(Tarjeta t)
         {
             TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
+
+            // Verificación para MedioBoleto
             if (t is MedioBoleto)
             {
-                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && usosDiario >= 4)
+                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && usosDiario < 4)
                 {
                     ultimaUso = DateTime.Now;
+<<<<<<< HEAD
+=======
+                    usosDiario++;
+>>>>>>> origin/ResolucionConflictos
                     return true;
                 }
                 return false;
             }
 
+            // Para otros tipos de tarjetas
             ultimaUso = DateTime.Now;
             return true;
         }
 
-        protected virtual DateTime ObtenerFechaActual()
+        public virtual DateTime ObtenerFechaActual()
         {
             return DateTime.Now;
         }
@@ -134,10 +141,18 @@ namespace TarjetaNamespace
         {
             if (usosDiario < 3 && EsHorarioValido())
             {
+<<<<<<< HEAD
                 usosDiario++;
                 return 0;
+=======
+                return 0; // Viaje gratis
+>>>>>>> origin/ResolucionConflictos
             }
             return precio;
         }
     }
+
+
+
 }
+
