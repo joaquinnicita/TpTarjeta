@@ -83,13 +83,9 @@ namespace TarjetaNamespace
                 if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && usosDiario < 4)
                 {
                     ultimaUso = DateTime.Now;
-<<<<<<< HEAD
-=======
-                    usosDiario++;
->>>>>>> origin/ResolucionConflictos
                     return true;
                 }
-                return false;
+                return false; // No puede usar la tarjeta
             }
 
             // Para otros tipos de tarjetas
@@ -141,12 +137,8 @@ namespace TarjetaNamespace
         {
             if (usosDiario < 3 && EsHorarioValido())
             {
-<<<<<<< HEAD
                 usosDiario++;
                 return 0;
-=======
-                return 0; // Viaje gratis
->>>>>>> origin/ResolucionConflictos
             }
             return precio;
         }
