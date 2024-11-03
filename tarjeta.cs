@@ -10,7 +10,7 @@ namespace TarjetaNamespace
         public int limite = 36000;
         public int ID = 123;
         public DateTime ultimaUso;
-        public int usosDiario = 0;
+        public int usosDiario = 1;
         public int saldoPendiente = 0;
         public int viajesMensuales = 0;
 
@@ -90,7 +90,7 @@ namespace TarjetaNamespace
             return true;
         }
 
-        protected virtual DateTime ObtenerFechaActual()
+        public virtual DateTime ObtenerFechaActual()
         {
             return DateTime.Now;
         }
@@ -134,10 +134,13 @@ namespace TarjetaNamespace
         {
             if (usosDiario < 3 && EsHorarioValido())
             {
-                usosDiario++;
                 return 0; // Viaje gratis
             }
             return precio;
         }
     }
+
+
+
 }
+
