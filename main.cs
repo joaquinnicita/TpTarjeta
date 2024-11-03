@@ -47,7 +47,7 @@ class Program
             Console.WriteLine("1: Cargar saldo");
             Console.WriteLine("2: Pagar boleto");
             Console.WriteLine("saldo actual: " + tarjeta.saldo);
-            
+
             string opcion = Console.ReadLine();
             {
                 switch (opcion)
@@ -58,18 +58,21 @@ class Program
                         tarjeta.cargarSaldo(monto);
                         break;
                     case "2":
-                        if (tarjeta.TarjetaUsos(tarjeta) && tarjeta.LimitacionFranquicia(tarjeta)) {
-                        colectivo.PagarCon(tarjeta, tarjeta.precioBoleto(boleto.precio));
-                        boleto.FechaDatos(); 
-                        boleto.TipoTarjeta(tarjeta);
-                        boleto.MostrarLinea(colectivo); }
-                    else {
-                        
-                        colectivo.PagarCon(tarjeta, boleto.precio);
-                        boleto.FechaDatos(); 
-                        boleto.TipoTarjeta(tarjeta);
-                        boleto.MostrarLinea(colectivo); 
-                    }
+                        if (tarjeta.TarjetaUsos(tarjeta))
+                        {
+                            colectivo.PagarCon(tarjeta, tarjeta.precioBoleto(boleto.precio));
+                            boleto.FechaDatos();
+                            boleto.TipoTarjeta(tarjeta);
+                            boleto.MostrarLinea(colectivo);
+                        }
+                        else
+                        {
+
+                            colectivo.PagarCon(tarjeta, boleto.precio);
+                            boleto.FechaDatos();
+                            boleto.TipoTarjeta(tarjeta);
+                            boleto.MostrarLinea(colectivo);
+                        }
                         break;
                     default:
                         Console.WriteLine("Opcion no valida");
