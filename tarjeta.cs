@@ -14,32 +14,41 @@ namespace TarjetaNamespace
         public int saldoPendiente = 0;
         public int viajesMensuales = 0;
 
+        private readonly int[] cargasAceptadas = { 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000 };
+
         public void cargarSaldo(int monto)
         {
-            if (saldo < limite && saldoPendiente > 0)
+            if (Array.Exists(cargasAceptadas, carga => carga == monto))
             {
-                int espacioDisponible = limite - saldo;
-                if (saldoPendiente >= espacioDisponible)
+                if (saldo < limite && saldoPendiente > 0)
                 {
-                    saldo += espacioDisponible;
-                    saldoPendiente -= espacioDisponible;
+                    int espacioDisponible = limite - saldo;
+                    if (saldoPendiente >= espacioDisponible)
+                    {
+                        saldo += espacioDisponible;
+                        saldoPendiente -= espacioDisponible;
+                    }
+                    else
+                    {
+                        saldo += saldoPendiente;
+                        saldoPendiente = 0;
+                    }
+                }
+
+                int espacioRestante = limite - saldo;
+                if (monto > espacioRestante)
+                {
+                    saldo = limite;
+                    saldoPendiente += monto - espacioRestante;
                 }
                 else
                 {
-                    saldo += saldoPendiente;
-                    saldoPendiente = 0;
+                    saldo += monto;
                 }
-            }
-
-            int espacioRestante = limite - saldo;
-            if (monto > espacioRestante)
-            {
-                saldo = limite;
-                saldoPendiente += monto - espacioRestante;
             }
             else
             {
-                saldo += monto;
+                Console.WriteLine("Carga no aceptada. Debe ser una de las siguientes cantidades: 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000.");
             }
         }
 
@@ -51,7 +60,7 @@ namespace TarjetaNamespace
             {
                 precioFinal = (int)(precio * 0.8);
             }
-            else if (viajesMensuales >= 79)
+            else if (viajesMensuales == 79 || viajesMensuales == 80)
             {
                 precioFinal = (int)(precio * 0.75);
             }
@@ -63,18 +72,22 @@ namespace TarjetaNamespace
         public bool TarjetaUsos(Tarjeta t)
         {
             TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
+
+            // Verificación para MedioBoleto
             if (t is MedioBoleto)
             {
-                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && usosDiario >= 4)
+                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && usosDiario < 4)
                 {
                     ultimaUso = DateTime.Now;
-                    return true; // Puede usar la tarjeta
+                    usosDiario++;
+                    return true;
                 }
-                return false; // No puede usar la tarjeta
+                return false;
             }
 
+            // Para otros tipos de tarjetas
             ultimaUso = DateTime.Now;
-            return true; // Puede usar la tarjeta
+            return true;
         }
 
         protected virtual DateTime ObtenerFechaActual()
@@ -93,12 +106,12 @@ namespace TarjetaNamespace
         {
             if (t is FranquiciaCompleta && usosDiario >= 2)
             {
-                return false; // Limite alcanzado
+                return false;
             }
             else
             {
                 usosDiario++;
-                return true; // Puede usar la franquicia
+                return true;
             }
         }
     }
@@ -107,11 +120,11 @@ namespace TarjetaNamespace
     {
         public override int precioBoleto(int precio)
         {
-            if (!EsHorarioValido())
+            if (EsHorarioValido())
             {
-                return precio; // No se aplica descuento fuera de horario válido
+                return (precio / 2);
             }
-            return base.precioBoleto(precio) / 2; // Precio reducido a la mitad
+            return precio;
         }
     }
 
@@ -119,12 +132,12 @@ namespace TarjetaNamespace
     {
         public override int precioBoleto(int precio)
         {
-            if (usosDiario < 3)
+            if (usosDiario < 3 && EsHorarioValido())
             {
                 usosDiario++;
-                return 0; // Primeros dos viajes son gratuitos
+                return 0; // Viaje gratis
             }
-            return precio; // Precio completo después de dos viajes
+            return precio;
         }
     }
 }
