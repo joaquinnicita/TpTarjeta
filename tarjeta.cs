@@ -65,20 +65,25 @@ namespace TarjetaNamespace
         {
             int precioFinal = precio;
 
-            if (viajesMensuales >= 30 && viajesMensuales <= 79)
+            if (viajesMensuales >= 30 && viajesMensuales < 79)
             {
                 precioFinal = (int)(precio * 0.8);
             }
-            else if (viajesMensuales == 80)
+            else if (viajesMensuales == 80|| viajesMensuales == 79 )
             {
                 precioFinal = (int)(precio * 0.75);
+            }
+            else
+            {
+                precioFinal = precio;
             }
 
             viajesMensuales++;
             return precioFinal;
         }
+    
 
-        public bool TarjetaUsos(tarjeta t)
+    public bool TarjetaUsos(tarjeta t)
         {
             TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
 
