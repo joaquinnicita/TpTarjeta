@@ -32,9 +32,9 @@ class Program
                     break;
                 default:
                     Console.WriteLine("Opcion no valida");
-                    continue; // Volver a pedir el tipo de tarjeta
+                    continue;
             }
-            break; // Salir del ciclo al seleccionar una tarjeta
+            break;
         }
 
         while (true)
@@ -54,7 +54,6 @@ class Program
                     break;
 
                 case "2":
-                    // Verificar si la tarjeta tiene usos y limitaciones de franquicia
                     if (tarjeta.TarjetaUsos(tarjeta) && tarjeta.LimitacionFranquicia(tarjeta))
                     {
                         colectivo.PagarCon(tarjeta, tarjeta.precioBoleto(boleto.precio));
@@ -64,7 +63,6 @@ class Program
                         colectivo.PagarCon(tarjeta, boleto.precio);
                     }
 
-                    // Mostrar detalles del boleto
                     boleto.FechaDatos();
                     boleto.TipoTarjeta(tarjeta);
                     boleto.MostrarLinea(colectivo);
