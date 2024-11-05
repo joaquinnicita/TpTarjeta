@@ -1,73 +1,96 @@
 using NUnit.Framework;
+using System;
 using TarjetaNamespace;
-using ColectivoNamespace;
-using BoletoNamespace;
 
-namespace Tests
+namespace TarjetaTests
 {
-    public class TarjetaTest : Tarjeta
+    [TestFixture]
+    public class TarjetaTests
     {
-        protected override DateTime ObtenerFechaActual()
+        private Tarjeta tarjetaRegular2;
+        private MedioBoleto MedioBoleto;
+        private FranquiciaCompleta FranquiciaCompleta;
+
+        [SetUp]
+        public void SetUp()
         {
-            return new DateTime(2024, 11, 4, 16, 0, 0);
-        }
-    }
-
-    public class TipoBoletos
-    {
-        [Test]
-        public void Test_Normal()
-        {
-            var tarjeta = new TarjetaTest();
-            var colectivo = new Colectivo();
-            var boleto = new Boleto();
-            tarjeta.cargarSaldo(2000);
-
-            colectivo.PagarCon(tarjeta, boleto.precio);
-
-            Assert.That(tarjeta.saldo, Is.EqualTo(2000 - 1200), "Es una tarjeta normal, el precio deberia ser completo (1200)");
+            tarjetaRegular2 = new Tarjeta();
+            MedioBoleto = new MedioBoletoTestable(new DateTime(2023, 11, 2, 15, 0, 0));
+            FranquiciaCompleta = new FranquiciaCompletaTestable(new DateTime(2023, 11, 2, 15, 0, 0));
         }
 
         [Test]
-        public void Test_MedioBoleto()
+        public void TestCargarSaldo_Exito()
         {
-            var tarjeta = new MedioBoletoTest();
-            var colectivo = new Colectivo();
-            var boleto = new Boleto();
-            tarjeta.cargarSaldo(2000);
-
-            colectivo.PagarCon(tarjeta, boleto.precio);
-
-            Assert.That(tarjeta.saldo, Is.EqualTo(2000 - 600), "Es un medio boleto, el precio deberia ser la mitad (600)");
+            tarjetaRegular2.cargarSaldo(2000);
+            Assert.AreEqual(2000, tarjetaRegular2.saldo);
         }
 
         [Test]
-        public void Test_FranquiciaCompleta()
+        public void TestCargarSaldo_FalloMontoInvalido()
         {
-            var tarjeta = new FranquiciaCompletaTest();
-            var colectivo = new Colectivo();
-            var boleto = new Boleto();
-            tarjeta.cargarSaldo(2000);
+            tarjetaRegular2.cargarSaldo(1500);
+            Assert.AreEqual(0, tarjetaRegular2.saldo);
+        }
 
-            colectivo.PagarCon(tarjeta, boleto.precio);
+        [Test]
+        public void TestPrecioBoleto_MedioBoleto_DescuentoDentroHorario()
+        {
+            int precioFinal = MedioBoleto.precioBoleto(1200);
+            Assert.AreEqual(600, precioFinal);
+        }
 
-            Assert.That(tarjeta.saldo, Is.EqualTo(2000), "Es franquicia completa, el precio deberia ser 0");
+        [Test]
+        public void TestPrecioBoleto_MedioBoleto_PrecioNormalFueraHorario()
+        {
+            MedioBoleto = new MedioBoletoTestable(new DateTime(2023, 11, 2, 23, 0, 0));
+            int precioFinal = MedioBoleto.precioBoleto(1200);
+            Assert.AreEqual(1200, precioFinal);
+        }
+
+        [Test]
+        public void TestPrecioBoleto_FranquiciaCompleta_DentroHorario()
+        {
+            int precioFinal = FranquiciaCompleta.precioBoleto(1200);
+            Assert.AreEqual(0, precioFinal);
+        }
+
+        [Test]
+        public void TestPrecioBoleto_FranquiciaCompleta_FueraHorario()
+        {
+            FranquiciaCompleta = new FranquiciaCompletaTestable(new DateTime(2023, 11, 2, 23, 0, 0));
+            int precioFinal = FranquiciaCompleta.precioBoleto(1200);
+            Assert.AreEqual(1200, precioFinal);
         }
     }
 
-    public class MedioBoletoTest : MedioBoleto
+    public class MedioBoletoTestable : MedioBoleto
     {
-        protected override DateTime ObtenerFechaActual()
+        private DateTime fechaActual;
+
+        public MedioBoletoTestable(DateTime fecha)
         {
-            return new DateTime(2024, 11, 4, 16, 0, 0);
+            fechaActual = fecha;
+        }
+
+        public override DateTime ObtenerFechaActual()
+        {
+            return fechaActual;
         }
     }
 
-    public class FranquiciaCompletaTest : FranquiciaCompleta
+    public class FranquiciaCompletaTestable : FranquiciaCompleta
     {
-        protected override DateTime ObtenerFechaActual()
+        private DateTime fechaActual;
+
+        public FranquiciaCompletaTestable(DateTime fecha)
         {
-            return new DateTime(2024, 11, 4, 16, 0, 0);
+            fechaActual = fecha;
+        }
+
+        public override DateTime ObtenerFechaActual()
+        {
+            return fechaActual;
         }
     }
 }
