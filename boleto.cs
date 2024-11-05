@@ -37,7 +37,5 @@ namespace BoletoNamespace
         {
             Console.WriteLine("Linea: " + colectivo.linea);
         }
-
-
     }
 }
