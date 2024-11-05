@@ -24,7 +24,7 @@ namespace ColectivoNamespace
                 precio = tarjeta.precioBoleto(precio);
             }
 
-            if (tarjeta.saldo >= precio)
+            if (tarjeta.saldo >= precio - 480)
             {
                 tarjeta.saldo -= precio;
                 Console.WriteLine("Pago realizado con éxito.");
