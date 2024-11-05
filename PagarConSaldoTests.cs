@@ -3,7 +3,7 @@ using TarjetaNamespace;
 using ColectivoNamespace;
 using BoletoNamespace;
 
-namespace Tests
+namespace Tests1
 {
     public class PagarConSaldoTests
     {
