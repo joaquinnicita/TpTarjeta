@@ -1,139 +1,96 @@
+using NUnit.Framework;
 using System;
-using BoletoNamespace;
-using ColectivoNamespace;
+using TarjetaNamespace;
 
-namespace TarjetaNamespace
+namespace TarjetaTests
 {
-    public class Tarjeta
+    [TestFixture]
+    public class TarjetaTests
     {
-        public int saldo;
-        public int limite = 36000;
-        public int ID = 123;
-        public DateTime ultimaUso;
-        public int usosDiario = 0;
-        public int saldoPendiente = 0;
-        public int viajesMensuales = 0;
+        private Tarjeta tarjetaRegular2;
+        private MedioBoleto MedioBoleto;
+        private FranquiciaCompleta FranquiciaCompleta;
 
-        private readonly int[] cargasAceptadas = { 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000 };
-
-        public void cargarSaldo(int monto)
+        [SetUp]
+        public void SetUp()
         {
-            if (Array.Exists(cargasAceptadas, carga => carga == monto))
-            {
-                if (saldo < limite && saldoPendiente > 0)
-                {
-                    int espacioDisponible = limite - saldo;
-                    if (saldoPendiente >= espacioDisponible)
-                    {
-                        saldo += espacioDisponible;
-                        saldoPendiente -= espacioDisponible;
-                    }
-                    else
-                    {
-                        saldo += saldoPendiente;
-                        saldoPendiente = 0;
-                    }
-                }
-
-                int espacioRestante = limite - saldo;
-                if (monto > espacioRestante)
-                {
-                    saldo = limite;
-                    saldoPendiente += monto - espacioRestante;
-                }
-                else
-                {
-                    saldo += monto;
-                }
-            }
-            else
-            {
-                Console.WriteLine("Carga no aceptada. Debe ser una de las siguientes cantidades: 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000.");
-            }
+            tarjetaRegular2 = new Tarjeta();
+            MedioBoleto = new MedioBoletoTestable(new DateTime(2023, 11, 2, 15, 0, 0));
+            FranquiciaCompleta = new FranquiciaCompletaTestable(new DateTime(2023, 11, 2, 15, 0, 0));
         }
 
-        public virtual int precioBoleto(int precio)
+        [Test]
+        public void TestCargarSaldo_Exito()
         {
-            int precioFinal = precio;
-
-            if (viajesMensuales >= 30 && viajesMensuales < 79)
-            {
-                precioFinal = (int)(precio * 0.8);
-            }
-            else if (viajesMensuales >= 79)
-            {
-                precioFinal = (int)(precio * 0.75);
-            }
-
-            viajesMensuales++;
-            return precioFinal;
+            tarjetaRegular2.cargarSaldo(2000);
+            Assert.AreEqual(2000, tarjetaRegular2.saldo);
         }
 
-        public bool TarjetaUsos(Tarjeta t)
+        [Test]
+        public void TestCargarSaldo_FalloMontoInvalido()
         {
-            TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
-            if (t is MedioBoleto)
-            {
-                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && usosDiario >= 4)
-                {
-                    ultimaUso = DateTime.Now;
-                    return true;
-                }
-                return false;
-            }
-
-            ultimaUso = DateTime.Now;
-            return true;
+            tarjetaRegular2.cargarSaldo(1500);
+            Assert.AreEqual(0, tarjetaRegular2.saldo);
         }
 
-        protected virtual DateTime ObtenerFechaActual()
+        [Test]
+        public void TestPrecioBoleto_MedioBoleto_DescuentoDentroHorario()
         {
-            return DateTime.Now;
+            int precioFinal = MedioBoleto.precioBoleto(1200);
+            Assert.AreEqual(600, precioFinal);
         }
 
-        protected bool EsHorarioValido()
+        [Test]
+        public void TestPrecioBoleto_MedioBoleto_PrecioNormalFueraHorario()
         {
-            DateTime ahora = ObtenerFechaActual();
-            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
-                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
+            MedioBoleto = new MedioBoletoTestable(new DateTime(2023, 11, 2, 23, 0, 0));
+            int precioFinal = MedioBoleto.precioBoleto(1200);
+            Assert.AreEqual(1200, precioFinal);
         }
 
-        public bool LimitacionFranquicia(Tarjeta t)
+        [Test]
+        public void TestPrecioBoleto_FranquiciaCompleta_DentroHorario()
         {
-            if (t is FranquiciaCompleta && usosDiario >= 2)
-            {
-                return false;
-            }
-            else
-            {
-                usosDiario++;
-                return true;
-            }
+            int precioFinal = FranquiciaCompleta.precioBoleto(1200);
+            Assert.AreEqual(0, precioFinal);
+        }
+
+        [Test]
+        public void TestPrecioBoleto_FranquiciaCompleta_FueraHorario()
+        {
+            FranquiciaCompleta = new FranquiciaCompletaTestable(new DateTime(2023, 11, 2, 23, 0, 0));
+            int precioFinal = FranquiciaCompleta.precioBoleto(1200);
+            Assert.AreEqual(1200, precioFinal);
         }
     }
 
-    public class MedioBoleto : Tarjeta
+    public class MedioBoletoTestable : MedioBoleto
     {
-        public override int precioBoleto(int precio)
+        private DateTime fechaActual;
+
+        public MedioBoletoTestable(DateTime fecha)
         {
-            if (EsHorarioValido())
-            {
-                return (precio / 2);
-            }
-            return precio;
+            fechaActual = fecha;
+        }
+
+        public override DateTime ObtenerFechaActual()
+        {
+            return fechaActual;
         }
     }
 
-    public class FranquiciaCompleta : Tarjeta
+    public class FranquiciaCompletaTestable : FranquiciaCompleta
     {
-        public override int precioBoleto(int precio)
+        private DateTime fechaActual;
+
+        public FranquiciaCompletaTestable(DateTime fecha)
         {
-            if (usosDiario < 3)
-            {
-                usosDiario++;
-                return 0;
-            }
-            return precio;
+            fechaActual = fecha;
+        }
+
+        public override DateTime ObtenerFechaActual()
+        {
+            return fechaActual;
         }
     }
 }
