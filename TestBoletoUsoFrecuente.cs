@@ -1,143 +1,57 @@
-using System;
-using BoletoNamespace;
-using ColectivoNamespace;
+using NUnit.Framework;
+using TarjetaNamespace;
 
-namespace TarjetaNamespace
+namespace TarjetaTests
 {
-    public class Tarjeta
+    [TestFixture]
+    public class TarjetaTests
     {
-        public int saldo;
-        public int limite = 36000;
-        public int ID = 123;
-        public DateTime ultimaUso;
-        public int usosDiario = 0;
-        public int saldoPendiente = 0;
-        public int viajesMensuales = 0;
+        private Tarjeta tarjetaRegular;
 
-        private readonly int[] cargasAceptadas = { 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000 };
-
-        public void cargarSaldo(int monto)
+        [SetUp]
+        public void SetUp()
         {
-            if (Array.Exists(cargasAceptadas, carga => carga == monto))
-            {
-                if (saldo < limite && saldoPendiente > 0)
-                {
-                    int espacioDisponible = limite - saldo;
-                    if (saldoPendiente >= espacioDisponible)
-                    {
-                        saldo += espacioDisponible;
-                        saldoPendiente -= espacioDisponible;
-                    }
-                    else
-                    {
-                        saldo += saldoPendiente;
-                        saldoPendiente = 0;
-                    }
-                }
-
-                int espacioRestante = limite - saldo;
-                if (monto > espacioRestante)
-                {
-                    saldo = limite;
-                    saldoPendiente += monto - espacioRestante;
-                }
-                else
-                {
-                    saldo += monto;
-                }
-            }
-            else
-            {
-                Console.WriteLine("Carga no aceptada. Debe ser una de las siguientes cantidades: 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000.");
-            }
+            tarjetaRegular = new Tarjeta();
         }
 
-        public virtual int precioBoleto(int precio)
+        [Test]
+        public void TestPrecioBoleto_Viajes1a29_TarifaNormal()
         {
-            int precioFinal = precio;
+            tarjetaRegular.viajesMensuales = 29;
 
-            if (viajesMensuales >= 30 && viajesMensuales < 79)
-            {
-                precioFinal = (int)(precio * 0.8);
-            }
-            else if (viajesMensuales == 79 || viajesMensuales == 80)
-            {
-                precioFinal = (int)(precio * 0.75);
-            }
-            else
-            {
-                precioFinal = precio;
-            }
+            int precioFinal = tarjetaRegular.precioBoleto(1000);
 
-            viajesMensuales++;
-            return precioFinal;
+            Assert.AreEqual(1000, precioFinal, "El precio debe ser tarifa normal para los viajes 1 a 29.");
         }
 
-        public bool TarjetaUsos(Tarjeta t)
+        [Test]
+        public void TestPrecioBoleto_Viajes30a79_Descuento20Porciento()
         {
-            TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
-            if (t is MedioBoleto)
-            {
-                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && usosDiario >= 4)
-                {
-                    ultimaUso = DateTime.Now;
-                    return true;
-                }
-                return false;
-            }
+            tarjetaRegular.viajesMensuales = 30;
 
-            ultimaUso = DateTime.Now;
-            return true;
+            int precioFinal = tarjetaRegular.precioBoleto(1000);
+
+            Assert.AreEqual(800, precioFinal, "El precio debe tener un 20% de descuento para los viajes 30 a 79.");
         }
 
-        protected virtual DateTime ObtenerFechaActual()
+        [Test]
+        public void TestPrecioBoleto_Viaje80_Descuento25Porciento()
         {
-            return DateTime.Now;
+            tarjetaRegular.viajesMensuales = 79;
+
+            int precioFinal = tarjetaRegular.precioBoleto(1000);
+
+            Assert.AreEqual(750, precioFinal, "El precio debe tener un 25% de descuento en el viaje 80.");
         }
 
-        protected bool EsHorarioValido()
+        [Test]
+        public void TestPrecioBoleto_Viaje81_TarifaNormal()
         {
-            DateTime ahora = ObtenerFechaActual();
-            return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
-                   (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
-        }
+            tarjetaRegular.viajesMensuales = 81;
 
-        public bool LimitacionFranquicia(Tarjeta t)
-        {
-            if (t is FranquiciaCompleta && usosDiario >= 2)
-            {
-                return false;
-            }
-            else
-            {
-                usosDiario++;
-                return true;
-            }
-        }
-    }
+            int precioFinal = tarjetaRegular.precioBoleto(1000);
 
-    public class MedioBoleto : Tarjeta
-    {
-        public override int precioBoleto(int precio)
-        {
-            if (EsHorarioValido())
-            {
-                return (precio / 2);
-            }
-            return precio;
-        }
-    }
-
-    public class FranquiciaCompleta : Tarjeta
-    {
-        public override int precioBoleto(int precio)
-        {
-            if (usosDiario < 3 && EsHorarioValido())
-            {
-                usosDiario++;
-                return 0;
-            }
-            return precio;
+            Assert.AreEqual(1000, precioFinal, "El precio debe ser tarifa normal a partir del viaje 81.");
         }
     }
 }
