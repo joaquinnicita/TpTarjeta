@@ -73,26 +73,6 @@ namespace TarjetaNamespace
             return precioFinal;
         }
 
-        public bool TarjetaUsos(Tarjeta t)
-        {
-            TimeSpan tiempoDesdeUltimoUso = DateTime.Now - ultimaUso;
-
-            // Verificación para MedioBoleto
-            if (t is MedioBoleto)
-            {
-                if (tiempoDesdeUltimoUso.TotalMinutes >= 5 && usosDiario < 4)
-                {
-                    ultimaUso = DateTime.Now;
-                    return true;
-                }
-                return false; // No puede usar la tarjeta
-            }
-
-            // Para otros tipos de tarjetas
-            ultimaUso = DateTime.Now;
-            return true;
-        }
-
         public virtual DateTime ObtenerFechaActual()
         {
             return DateTime.Now;
@@ -105,46 +85,6 @@ namespace TarjetaNamespace
                    (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
         }
 
-        public bool LimitacionFranquicia(Tarjeta t)
-        {
-            if (t is FranquiciaCompleta && usosDiario >= 2)
-            {
-                return false;
-            }
-            else
-            {
-                usosDiario++;
-                return true;
-            }
-        }
+        
     }
-
-    public class MedioBoleto : Tarjeta
-    {
-        public override int precioBoleto(int precio)
-        {
-            if (EsHorarioValido())
-            {
-                return (precio / 2);
-            }
-            return precio;
-        }
-    }
-
-    public class FranquiciaCompleta : Tarjeta
-    {
-        public override int precioBoleto(int precio)
-        {
-            if (usosDiario < 3 && EsHorarioValido())
-            {
-                usosDiario++;
-                return 0;
-            }
-            return precio;
-        }
-    }
-
-
-
 }
-
