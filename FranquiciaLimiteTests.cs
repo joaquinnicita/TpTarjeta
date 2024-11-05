@@ -3,7 +3,7 @@ using NUnit.Framework;
 using TarjetaNamespace;
 using BoletoNamespace;
 
-namespace Tests
+namespace Tests2
 {
     public class FranquiciaCompletaTest : FranquiciaCompleta
     {
