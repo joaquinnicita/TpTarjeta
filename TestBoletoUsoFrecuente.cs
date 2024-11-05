@@ -4,12 +4,12 @@ using TarjetaNamespace;
 namespace TarjetaTests
 {
     [TestFixture]
-    public class TarjetaTests
+    public class TarjetaTests3
     {
         private Tarjeta tarjetaRegular;
 
         [SetUp]
-        public void SetUp()
+        public void SetUp2()
         {
             tarjetaRegular = new Tarjeta();
         }
