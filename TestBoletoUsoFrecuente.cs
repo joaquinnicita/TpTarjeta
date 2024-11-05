@@ -6,12 +6,12 @@ namespace TarjetaTests
     [TestFixture]
     public class TarjetaTests
     {
-        private tarjeta tarjetaRegular;
+        private Tarjeta tarjetaRegular;
 
         [SetUp]
         public void SetUp()
         {
-            tarjetaRegular = new tarjeta();
+            tarjetaRegular = new Tarjeta();
         }
 
         [Test]
