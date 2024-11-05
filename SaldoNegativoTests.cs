@@ -5,7 +5,7 @@ using BoletoNamespace;
 
 namespace Tests
 {
-    public class PagarConSaldoTests
+    public class PagarConSaldoTests2
     {
         [Test]
         public void Test_NoSaldoNegativo()
