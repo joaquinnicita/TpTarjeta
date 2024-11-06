@@ -1,9 +1,9 @@
 using System;
 using TarjetaNamespace;
 using ColectivoNamespace;
+
 namespace BoletoNamespace
 {
-
     public class Boleto
     {
         public int precio = 1200;

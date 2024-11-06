@@ -1,6 +1,4 @@
 using System;
-using BoletoNamespace;
-using ColectivoNamespace;
 
 namespace TarjetaNamespace
 {
@@ -64,10 +62,6 @@ namespace TarjetaNamespace
             {
                 precioFinal = (int)(precio * 0.75);
             }
-            else
-            {
-                precioFinal = precio;
-            }
 
             viajesMensuales++;
             return precioFinal;
@@ -84,7 +78,5 @@ namespace TarjetaNamespace
             return (ahora.DayOfWeek != DayOfWeek.Saturday && ahora.DayOfWeek != DayOfWeek.Sunday) &&
                    (ahora.TimeOfDay >= new TimeSpan(6, 0, 0) && ahora.TimeOfDay <= new TimeSpan(22, 0, 0));
         }
-
-        
     }
 }
